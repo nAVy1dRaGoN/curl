@@ -32,17 +32,23 @@ url = "https://curl.haxx.se/docs/"
 
 When curl is invoked, it (unless --disable is used) checks for a default
 config file and uses it if found. The default config file is checked for in
-the following places in this order:
+the user's curl directory, which is determined as decribed below.
 
-1) curl tries to find the "home dir": It first checks for the CURL_HOME and
-then the HOME environment variables. Failing that, it uses getpwuid() on
-Unix-like systems (which returns the home dir given the current user in your
-system). On Windows, it then checks for the APPDATA variable, or as a last
-resort the '%USERPROFILE%\\Application Data'.
+1) Checks for the CURL_HOME environment variable. If set, that's used.
 
-2) On windows, if there is no .curlrc file in the home dir, it checks for one
-in the same dir the curl executable is placed. On Unix-like systems, it will
-simply try to load .curlrc from the determined home dir.
+2) Checks for the XDG_CONFIG_HOME environment variable. If set, that's used.
+(added in curl 7.73.0)
+
+3) Checks for the HOME environment variable. If set, that's used.
+
+4) Failing those, it uses getpwuid() on Unix-like systems (which returns the
+home dir given the current user in your system). On Windows, it then checks
+the APPDATA environment variable, and as a last resort
+the '%USERPROFILE%\\Application Data' directory (if the USERPROFILE
+environment directory is set).
+
+5) On windows, if there is no .curlrc file in the home dir, it checks for one
+in the same dir the curl executable is placed.
 
 .nf
 # --- Example file ---

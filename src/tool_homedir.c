@@ -44,14 +44,20 @@ static char *GetEnv(const char *variable)
   return dupe;
 }
 
-/* return the home directory of the current user as an allocated string */
-char *homedir(void)
+/* return the directory as an allocated string */
+static char *checkdir(bool xdg)
 {
   char *home;
 
   home = GetEnv("CURL_HOME");
   if(home)
     return home;
+
+  if(xdg) {
+    home = GetEnv("XDG_CONFIG_HOME");
+    if(home)
+      return home;
+  }
 
   home = GetEnv("HOME");
   if(home)
@@ -85,4 +91,18 @@ char *homedir(void)
   }
 #endif /* WIN32 */
   return home;
+}
+
+/* Returns the home directory of the current user as an allocated string.
+   This ignores XDG_CONFIG_HOME. */
+char *homedir(void)
+{
+  return checkdir(FALSE);
+}
+
+/* Returns the curl config directory as an allocated string.
+   This supports XDG_CONFIG_HOME. */
+char *curldir(void)
+{
+  return checkdir(TRUE);
 }
